@@ -10,19 +10,19 @@ function useForm() {
     const [error, setError] = useState('');
 
     const checkFirstName = (e) => {
-        if (e === "") {
+        if (firstName === "") {
         setError("Поле firstName и lastName не могут быть пустыми");
     } else {
         setError("");
     }};
     const checkLastName = (e) => {
-        if (e === "") {
+        if (lastName === "") {
         setError("Поле firstName и lastName не могут быть пустыми");
     } else {
         setError("");
     }};
     const checkEmail = (e) => {
-        if (!/^[A-Z0-9]+\@[A-Z0-9]+\.[A-Z0-9]{2,}$/i.test(e)) {
+        if (!/^[A-Z0-9]+\@[A-Z0-9]+\.[A-Z0-9]{2,}$/i.test(email)) {
         setError("Можно ввести только латинские буквы, цифры и обязательно должны присутствовать символы «@» и «.», после «.» должно быть не менее 2-х символов");
     } else {
         setError("");
