@@ -1,7 +1,8 @@
-import React, {useCallback, useState} from 'react';
+import React, {useRef, useState} from 'react';
 import './TaskOne.css';
 
-function useForm() {
+function useForm (firstNameInp, lastNameInp, emailInp, passwordInp, confirmPasswordInp) {
+    
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [email, setEmail] = useState('');
@@ -9,31 +10,20 @@ function useForm() {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [error, setError] = useState('');
 
-    const checkFirstName = (e) => {
-        if (firstName === "") {
-        setError("Поле firstName и lastName не могут быть пустыми");
-    } else {
-        setError("");
-    }};
-    const checkLastName = (e) => {
-        if (lastName === "") {
-        setError("Поле firstName и lastName не могут быть пустыми");
-    } else {
-        setError("");
-    }};
-    const checkEmail = (e) => {
-        if (!/^[A-Z0-9]+\@[A-Z0-9]+\.[A-Z0-9]{2,}$/i.test(email)) {
-        setError("Можно ввести только латинские буквы, цифры и обязательно должны присутствовать символы «@» и «.», после «.» должно быть не менее 2-х символов");
-    } else {
-        setError("");
-    }};
-    const checkPass = () => {
-        if (password !== confirmPassword) {
-        setError('Пароли не совпадают!');
-    } else {
-        setError("");
-    }};
-        const onSubmitHandle = useCallback((event) => {
+    const messErrName = () => {
+            setError(firstNameInp.current.value === "" || lastNameInp === "" ? "Поля firstName и lastName не должны быть пустыми" : setError("")) 
+    };
+    const messErrEmail = () => {
+            setError(!/^[A-Z0-9]+\@[A-Z0-9]+\.[A-Z0-9]{2,}$/i.test(emailInp.current.value) ? "Можно ввести только латинские буквы, цифры и обязательно должны присутствовать символы «@» и «.», после «.» должно быть не менее 2-х символов" : setError(""))
+    };
+    const messErrPass = () => {
+            setError(passwordInp.current.value.length < 5 ? "Поле password должно содержать не менее 5 символов, включая числа и специальные символы" : setError(""))
+    };
+    const messErrConfPass = () => {
+            setError(confirmPasswordInp.current.value !== passwordInp.current.value ? "Поля password и confirmPassword не совпадают" : setError(""))
+    };
+
+    const onSubmitHandle = (event) => {
         event.preventDefault();
 
         const {
@@ -55,13 +45,17 @@ function useForm() {
             email,
             password,
             confirmPassword,}));
-        
-        }, []);
-        return {firstName, lastName, email, password, confirmPassword, error, checkFirstName, checkLastName, checkEmail, checkPass, onSubmitHandle};
-    }
+        };
+    return {firstName, lastName, email, password, confirmPassword, error, messErrName, messErrEmail, messErrPass, messErrConfPass, onSubmitHandle}
+}
 
-function TaskOne(checkFirstName, checkLastName, checkEmail, checkPass, onSubmitHandle) {
-    const {firstName, lastName, email, password, confirmPassword, error} = useForm();
+function TaskOne(messErrName, messErrEmail, messErrPass, messErrConfPass, onSubmitHandle) {
+    const firstNameInp = useRef();
+    const lastNameInp = useRef();
+    const emailInp = useRef();
+    const passwordInp = useRef();
+    const confirmPasswordInp = useRef();
+    const {firstName, lastName, email, password, confirmPassword, error} = useForm(firstNameInp, lastNameInp, emailInp, passwordInp, confirmPasswordInp);
     /**
      * Вынесите эти стейты в свой хук, все изменения полей должны валидирвоаться по разным правилам:
      * firstName, lastName - не могут быть пустыми
@@ -83,6 +77,7 @@ function TaskOne(checkFirstName, checkLastName, checkEmail, checkPass, onSubmitH
 
         // И используйте alert, чтобы показать результат
         
+    
 
     // TODO: реализуйте пользовательский хук для валидации
     // const submitForm = useSubmitForm(onSubmitHandle);
@@ -92,16 +87,16 @@ function TaskOne(checkFirstName, checkLastName, checkEmail, checkPass, onSubmitH
         <div className="form-container">
             <div className="error-message">{error}</div>
             <form onSubmit={onSubmitHandle}> {/* Измените здесь на submitForm, когда он будет готов */}
-                <input  type="text" name="firstName" placeholder="First Name" className="form-input"
-                       onChange={(e) => checkFirstName(e.target.value)} value={firstName}/>
-                <input type="text" name="lastName" placeholder="Last Name" className="form-input"
-                       onChange={(e) => checkLastName(e.target.value)} value={lastName}/>
-                <input type="email" name="email" placeholder="Email" className="form-input"
-                       onChange={(e) => checkEmail(e.target.value)} value={email}/>
-                <input type="password" name="password" placeholder="Password" className="form-input"
-                       onChange={(e) => checkPass(e.target.value)} value={password}/>
-                {/* <input type="password" name="confirmPassword" placeholder="Confirm Password" className="form-input"
-                       onChange={(e) => setConfirmPassword(e.target.value)} value={confirmPassword}/> */}
+                <input ref={firstNameInp} type="text" name="firstName" placeholder="First Name" className="form-input"
+                       onChange={(e) => e.target.value = messErrName} value={firstName}/>
+                <input ref={lastNameInp} type="text" name="lastName" placeholder="Last Name" className="form-input"
+                       onChange={(e) => e.target.value = messErrName} value={lastName}/>
+                <input ref={emailInp} type="email" name="email" placeholder="Email" className="form-input"
+                       onChange={(e) => e.target.value = messErrEmail} value={email}/>
+                <input ref={passwordInp} type="password" name="password" placeholder="Password" className="form-input"
+                       onChange={(e) => e.target.value = messErrPass} value={password}/>
+                <input ref={confirmPasswordInp} type="password" name="confirmPassword" placeholder="Confirm Password" className="form-input"
+                       onChange={(e) => e.target.value = messErrConfPass} value={confirmPassword}/>
                 <button type="submit" className="form-button">Register</button>
             </form>
         </div>
