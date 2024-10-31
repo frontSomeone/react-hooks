@@ -1,16 +1,27 @@
-import React, {useState} from 'react';
+import React, {useCallback, useState} from 'react';
+import { debounce } from 'lodash';
 import './TaskThree.css';
 
-// функция для получения данных с Mock API
-const fetchData = async (search) => {
-    const response = await fetch(`https://jsonplaceholder.typicode.com/posts?search=${search}`);
-    return await response.json();
-}
-
-export default function TaskThree() {
+function useFetch() {
     const [search, setSearch] = useState();
     const [posts, setPosts] = useState([]);
+    // функция для получения данных с Mock API
+    useCallback(() => fetchData(search), [search]);
+    
+    
+    const fetchData = useCallback(debounce((search) => {
+    const response = fetch(`https://jsonplaceholder.typicode.com/posts?search=${search}`)
+    .then(response => {
+        setPosts(response.json());
+    })
+    return response.json();
+}, 500), [])
+    return {setSearch, posts}
+}
 
+
+export default function TaskThree() {
+    const {setSearch, posts} = useFetch();
     return (
         <div className="TaskThree">
             <input type="text" onChange={(event) => setSearch(event.target.value)} placeholder="Search posts"/>
