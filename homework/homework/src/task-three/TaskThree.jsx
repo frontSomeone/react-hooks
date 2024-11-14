@@ -1,4 +1,4 @@
-import React, {useCallback, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import { debounce } from 'lodash';
 import './TaskThree.css';
 
@@ -6,16 +6,22 @@ function useFetch() {
     const [search, setSearch] = useState();
     const [posts, setPosts] = useState([]);
     // функция для получения данных с Mock API
-    useCallback(() => fetchData(search), [search]);
+    let controller = new AbortController();
+    useEffect(() => {
+        controller.abort();
+        }, []);
+
+    useEffect(debounce(() => {
+        fetchData(search)
+    }, 500), [search]);
     
-    
-    const fetchData = useCallback(debounce((search) => {
-    const response = fetch(`https://jsonplaceholder.typicode.com/posts?search=${search}`)
-    .then(response => {
-        setPosts(response.json());
-    })
-    return response.json();
-}, 500), [])
+    const fetchData = useCallback(async (search) => {
+        controller.abort();
+        const response = await fetch(`https://jsonplaceholder.typicode.com/posts?search=${search}`);
+        console.log(response);
+        setPosts(response.json())
+        return await response.json();
+    });
     return {setSearch, posts}
 }
 
