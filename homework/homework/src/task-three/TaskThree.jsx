@@ -6,22 +6,19 @@ function useFetch() {
     const [search, setSearch] = useState();
     const [posts, setPosts] = useState([]);
     // функция для получения данных с Mock API
-    let controller = new AbortController();
     useEffect(() => {
-        controller.abort();
-        }, []);
-
-    useEffect(debounce(() => {
-        fetchData(search)
-    }, 500), [search]);
+        if (search) {
+            let controller = new AbortController();
+            fetchData(search, controller);
+        }
+    }, [search]);
     
-    const fetchData = useCallback(async (search) => {
-        controller.abort();
-        const response = await fetch(`https://jsonplaceholder.typicode.com/posts?search=${search}`);
-        console.log(response);
-        setPosts(response.json())
-        return await response.json();
-    });
+    const fetchData = useCallback(debounce(async(search, controller) => {
+        const response = await fetch(`https://jsonplaceholder.typicode.com/posts?search=${search}`, {signal: controller.signal});
+        // console.log(response);
+        setPosts(await response.json())
+        // return await response.json();
+    }, 500), []);
     return {setSearch, posts}
 }
 
