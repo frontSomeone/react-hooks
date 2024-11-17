@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useState} from 'react';
-import { debounce } from 'lodash';
+import { debounce, get } from 'lodash';
 import './TaskThree.css';
 
 function useFetch() {
@@ -15,9 +15,7 @@ function useFetch() {
     
     const fetchData = useCallback(debounce(async(search, controller) => {
         const response = await fetch(`https://jsonplaceholder.typicode.com/posts?search=${search}`, {signal: controller.signal});
-        // console.log(response);
         setPosts(await response.json())
-        // return await response.json();
     }, 500), []);
     return {setSearch, posts}
 }
@@ -30,7 +28,7 @@ export default function TaskThree() {
             <input type="text" onChange={(event) => setSearch(event.target.value)} placeholder="Search posts"/>
             <h1>Posts</h1>
             <ul>
-                {posts.map(item => <li key={item}>{item}</li>)}
+                {posts.map(item => <li key={item.id}>{item.title}</li>)}
             </ul>
         </div>
     )
