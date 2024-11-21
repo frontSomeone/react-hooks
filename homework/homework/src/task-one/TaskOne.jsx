@@ -19,6 +19,15 @@ function useForm () {
         } else if (!/^[A-Z0-9]+\@[A-Z0-9]+\.[A-Z0-9]{2,}$/i.test(email)) {
             setError("Можно ввести только латинские буквы, цифры и обязательно должны присутствовать символы «@» и «.», после «.» должно быть не менее 2-х символов");
             return error;
+        } else if (!/[a-z]/i.test(password)) {
+            setError("Поле password должно содержать не менее 5 символов, включая числа и специальные символы");
+            return error;
+        } else if (!/[0-9]/i.test(password)) {
+            setError("Поле password должно содержать не менее 5 символов, включая числа и специальные символы");
+            return error;
+        } else if (!/\W/i.test(password)) {
+            setError("Поле password должно содержать не менее 5 символов, включая числа и специальные символы");
+            return error;
         } else if (password.length < 5) {
             setError("Поле password должно содержать не менее 5 символов, включая числа и специальные символы");
             return error;

@@ -1,4 +1,4 @@
-import React, {memo} from 'react'
+import React, {memo, useMemo} from 'react'
 import RenderCounter from './render-counter/RenderCounter';
 import './TaskTwo.css';
 
@@ -13,29 +13,35 @@ export default function TaskTwo() {
     )
 }
 
-const Root = memo(({ value }) => {
+const ChangeValue = memo(() => {
+    return (
+        <RenderCounter/>
+    )
+})
+
+const Root = memo(() => {
+    const [value, setValue] = React.useState('')
+    const handleChange = (event) => {
+        setValue(event.target.value);
+    }
     return (
         <form className="form-container">
             Введенное значение: {value}
-            <RenderCounter />
-            <Input />
+            <ChangeValue/>
+            <Input onChange={handleChange} />
         </form>
     )
 })
 
-const Input = () => {
-    const [value, setValue] = React.useState('')
-    const handleChange = (event) => {
-        setValue(event.target.value)
-        return <Root onChange={value} />
-    }
+
+const Input = memo(({ onChange }) => {
     return (
         <div className="input-container">
-            <input type="text" className="input-field" name="value" onChange={handleChange} />
+            <input type="text" className="input-field" name="value" onChange={onChange} />
             <RenderCounter />
         </div>
     )
-}
+})
 
 function useUpdate() {
     const [, setCount] = React.useState(0)
